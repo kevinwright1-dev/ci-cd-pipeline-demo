@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Say hello
+        run: echo "Hello from ubuntu-node1, running via GitHub Actions!"
+
+      - name: Show system info
+        run: |
+          hostname
+          docker --version
+          df -h
+EOF
