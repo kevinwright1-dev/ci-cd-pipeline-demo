@@ -4,18 +4,26 @@ on:
   push:
     branches: [ main ]
 
+env:
+  IMAGE_NAME: ghcr.io/kevinwright1-dev/ci-cd-pipeline-demo
+
 jobs:
   build:
     runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Say hello
-        run: echo "Hello from ubuntu-node1, running via GitHub Actions!"
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Show system info
+      - name: Build image
+        run: sudo docker build -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest .
+
+      - name: Push image
         run: |
-          hostname
-          docker --version
-          df -h
+          sudo docker push $IMAGE_NAME:${{ github.sha }}
+          sudo docker push $IMAGE_NAME:latest
